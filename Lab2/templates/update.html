@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update</title>
+
+
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<form action='/update/{{release.id}}' method="POST" class="post-form">
+    {% csrf_token %}
+
+                            <div class = "form-group">
+                                <label for="game">Choose game: </label>
+                                <select class="form-control" id="game" name="game">
+                                  {% for game in game_list %}
+                                    <option {% if release.gid == game %} selected value  = '{{ game }}' {% endif %} >{{ game }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="developer">Choose developer: </label>
+                                <select class="form-control" id="developer" name="developer">
+                                  {% for dev in dev_list %}
+                                    <option {% if release.did == dev %} selected value  = '{{ dev }}' {% endif %}>{{ dev }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="publisher">Choose publisher: </label>
+                                <select class="form-control" id="publisher" name="publisher">
+                                  {% for pub in pub_list %}
+                                    <option {% if release.pid == pub %} selected value  = '{{ pub }}' {% endif %}>{{ pub }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="profit">Profit:</label>
+                                <div >
+                                  <input type="text" class="form-control" id="profit" placeholder="Enter profit" name = 'profit' value="{{ release.profit }}">
+                                </div>
+                                <br/>
+                                <label for="date">Release date:</label>
+                                <div>
+                                    <input type="date" class="form-control" id="date" min="2000-01-01" max="2020-01-01" name="date" >
+                                </div>
+                            </div>
+                           <div class="modal-footer">
+                               <button type="submit" class="save btn btn-success">Okay</button>
+                               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+
+    </body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homepage</title>
+
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+    <body>
+        <div class="container">
+            <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <th>Game</th>
+                <th>Developer</th>
+                <th>Publisher</th>
+                <th>Profit</th>
+                <th>Date</th>
+                <th>Functions</th>
+            </thead>
+            <tbody>
+                 {% for release in releases %}
+                    <tr id = {{ release.id }}>
+                        <td> {{ release.gid }}</td>
+                        <td> {{ release.did }}</td>
+                        <td> {{ release.pid }}</td>
+                        <td> {{ release.profit }}</td>
+                        <td> {{ release.release_date }}</td>
+                        <td>
+                            <div style="display: inline-flex">
+                            <form action='/delete/{{release.id}}' method='POST' id="delete_form_{{release.id}}" onclick="getId(this)">{% csrf_token %}
+                              <button type="button"  data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-delete">Delete </button>
+                            </form>
+                            <form action='/update/{{release.id}}' method='GET' id="update_form_{{release.id}}" onclick="getId(this)">{% csrf_token %}
+                              <button type="submit" class="btn btn-primary btn-delete">Update</button>
+                            </form>
+                            </div>
+
+                        </td>
+                    </tr>
+                 {% endfor %}
+            </tbody>
+
+            </table>
+        </div>
+
+        <br/>
+
+        <div class="col-lg-5">
+        <form action='/filter/' method='POST' id="filter" >{% csrf_token %}
+            <div>
+                <label>Count employees in developer company:</label>
+                <br/>
+                <label>from </label>
+                <input type="number" class="form-control input-sm" id="low" min="0" value="0" max="5000" name = 'low'>
+                <label> to  </label>
+                <input type="number" class="form-control input-sm" id="high" min="0" value="5000" max="5000" name = 'high'>
+            </div>
+
+            <br/>
+
+             <label for="game">Select games: </label>
+                <select class="form-control" id="game" name="games" multiple size="3">
+                  {% for game in game_list %}
+                    <option>{{ game }}</option>
+                  {% endfor %}
+                </select>
+
+             <label for="publisher">Select publishers: </label>
+            <select class="form-control" id="publisher" name="publishers" multiple size="3">
+              {% for pub in pub_list %}
+                <option>{{ pub }}</option>
+              {% endfor %}
+            </select>
+
+            <br/>
+
+            <div>
+               <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add game release</button>
+            </div>
+         </form>
+        </div>
+
+        <br/>
+
+        <div class="col-lg-5">
+            <form action='/search1' method='GET'  id="search_form">
+             {% csrf_token %}
+          <div class="input-group">
+              <label for="search">Search in game's description a mandatory occurence of a word:</label>
+              <div style="display: inline-flex">
+                  <input type="text" class="form-control" placeholder="Search" id="search" name="search1">
+                      <div class="input-group-btn">
+                        <button class="btn btn-default btn-m" type="submit">
+                          <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                      </div>
+              </div>
+          </div>
+          </form>
+            <br/>
+         <form action='/search2' method='GET' id="search_form">
+             {% csrf_token %}
+          <div class="input-group">
+              <label for="search">Search in game's descriptions that don't contain the word:</label>
+              <div style="display: inline-flex">
+                <input type="text" class="form-control" placeholder="Search" id="search" name="search2">
+                  <div class="input-group-btn">
+                    <button class="btn btn-default btn-m" type="submit">
+                      <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+          </form>
+        </div>
+
+
+        <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% block content %}
+                        <form action="/home/" method="POST" class="post-form">{% csrf_token %}
+                            <div class = "form-group">
+                                <label for="game">Choose game: </label>
+                                <select class="form-control" id="game" name="game">
+                                  {% for game in game_list %}
+                                    <option>{{ game }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="developer">Choose developer: </label>
+                                <select class="form-control" id="developer" name="developer">
+                                  {% for dev in dev_list %}
+                                    <option>{{ dev }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="publisher">Choose publisher: </label>
+                                <select class="form-control" id="publisher" name="publisher">
+                                  {% for pub in pub_list %}
+                                    <option>{{ pub }}</option>
+                                  {% endfor %}
+                                </select>
+                                <br/>
+                                <label for="profit">Profit:</label>
+                                <div >
+                                  <input type="text" class="form-control" id="profit" placeholder="Enter profit" name = 'profit' >
+                                </div>
+                                <br/>
+                                <label for="date">Release date:</label>
+                                <div>
+                                    <input type="date" class="form-control" id="date" min="2000-01-01" max="2020-01-01" name="date">
+                                </div>
+                            </div>
+                           <div class="modal-footer">
+                               <button type="submit" class="save btn btn-success">Okay</button>
+                               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+                    {% endblock %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Warning</h4>
+              </div>
+              <div class="modal-body">
+                Are you sure?
+              </div>
+              <div class="modal-footer" >
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-delete" id="dlt_btn">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+                var currentFormId;
+
+                function getId(obj){
+                  currentFormId = obj.id;
+                }
+
+                document.getElementById('dlt_btn').onclick = function() {
+                  document.getElementById(currentFormId).submit();
+                }
+            </script>
+    </body>
+</html>
